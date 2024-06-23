@@ -208,17 +208,9 @@ export function isBrowserValid(browser: Browser): boolean {
 	return true;
 }
 
-export function chunkSubstr(str: string, size: number): string[] {
-	const numChunks = Math.ceil(str.length / size);
-	const chunks = new Array(numChunks);
-
-	let index = 0;
-
-	for (let i = 0; i < numChunks; i += 1) {
-		chunks[i] = str.substring(index, size);
-
-		index += size;
-	}
-
+export function chunkSubstr(string: string, size: number): string[] {
+	const chunks = [];
+	for (let i = 0; i <= string.length - 1; i += size)
+		chunks.push(string.substr(i, Math.min(size, string.length - i)));
 	return chunks;
 }

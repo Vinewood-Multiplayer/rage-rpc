@@ -29,7 +29,7 @@ interface Event {
 }
 
 const ERR_NOT_FOUND = 'PROCEDURE_NOT_FOUND';
-const MAX_DATA_SIZE = 32000;
+const MAX_DATA_SIZE = 30000;
 
 const IDENTIFIER = '__rpc:id';
 const PROCESS_EVENT = '__rpc:process';
@@ -104,13 +104,13 @@ if (!glob[PROCESS_EVENT]) {
 
 			switch (environment) {
 				case 'server': {
-					ret = (ev) => info.player!.call(PROCESS_EVENT, [stringifyData(ev)]);
+					ret = (ev) => sendEventData(ev, info.player);
 					break;
 				}
 
 				case 'client': {
 					if (data.env === 'server') {
-						ret = (ev) => mp.events.callRemote(PROCESS_EVENT, stringifyData(ev));
+						ret = (ev) => sendEventData(ev);
 					} else if (data.env === 'cef') {
 						const browser = data.b && glob.__rpcBrowsers[data.b];
 						info.browser = browser;
@@ -237,8 +237,7 @@ function passEventToBrowser(browser: Browser, data: Event, ignoreNotFound: boole
 	const raw = stringifyData(data);
 
 	browser.execute(
-		`var process = window["${PROCESS_EVENT}"]; if(process){ process(${JSON.stringify(raw)}); }else{ ${
-			ignoreNotFound ? '' : `mp.trigger("${PROCESS_EVENT}", '{"ret":1,"id":"${data.id}","err":"${ERR_NOT_FOUND}","env":"cef"}');`
+		`var process = window["${PROCESS_EVENT}"]; if(process){ process(${JSON.stringify(raw)}); }else{ ${ignoreNotFound ? '' : `mp.trigger("${PROCESS_EVENT}", '{"ret":1,"id":"${data.id}","err":"${ERR_NOT_FOUND}","env":"cef"}');`
 		} }`
 	);
 }
